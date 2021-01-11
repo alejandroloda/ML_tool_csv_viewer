@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMainWindow, QPu
 
 from PyQt5.QtCore import Qt, QAbstractTableModel
 
+import pandas as pd
 
 
 class FileSelector(QWidget):
@@ -35,6 +36,7 @@ class FileSelector(QWidget):
         hbox.addWidget(self.button_file_explorer)
 
         self.button_refresh = QPushButton('Aplicar', self)
+        self.button_refresh.clicked.connect(self.refresh_file)
         # TODO
         # self.button_refresh.clicked.connect(self.openFileNameDialog)
         hbox.addWidget(self.button_refresh)
@@ -47,15 +49,20 @@ class FileSelector(QWidget):
         filename, _ = QFileDialog.getOpenFileName(self, "Elegir CSV", "",
                                                   "CSV Files (*.csv);;All Files (*)", options=options)
         if filename:
-            self.file = filename
-            self.text_file_explorer.setText(self.file)
+            self.filename = filename
+            self.text_file_explorer.setText(self.filename)
             print(filename)
+
+    def refresh_file(self):
+        df = pd.read_csv(self.filename, sep=';')
+        self.main.refresh_model(df)
 
 
 class PandasModel(QAbstractTableModel):
     def __init__(self, data, parent=None):
         QAbstractTableModel.__init__(self, parent)
         self._data = data
+        self.header_labels = data.columns
 
     def rowCount(self, parent=None):
         return len(self._data.values)
@@ -69,6 +76,11 @@ class PandasModel(QAbstractTableModel):
                 return QtCore.QVariant(str(
                     self._data.values[index.row()][index.column()]))
         return QtCore.QVariant()
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+            return self.header_labels[section]
+        return QAbstractTableModel.headerData(self, section, orientation, role)
 
 
 class MyMainWindow(QMainWindow):
@@ -86,16 +98,15 @@ class MyMainWindow(QMainWindow):
         self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget_file_explorer)
 
         # Reader
-        table = QTableView()
+        self.table = QTableView()
 
-        import pandas as pd
         df = pd.read_csv("test.csv", sep=';')
-        print(df)
+        self.refresh_model(df)
+        self.setCentralWidget(self.table)
+
+    def refresh_model(self, df):
         model = PandasModel(df)
-        table.setModel(model)
-    # self.table_view = MyWindow("test.csv")
-        #
-        self.setCentralWidget(table)
+        self.table.setModel(model)
 
 
 if __name__ == '__main__':
