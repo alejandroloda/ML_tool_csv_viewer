@@ -6,56 +6,15 @@
 # |_|  |_| \__,_||_||_| |_||_|    |_|   \___/  \__, ||_|   \__,_||_| |_| |_|
 #                                               __/ |
 #                                              |___/
-import csv
 import sys
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMainWindow, QPushButton, QHBoxLayout, \
-    QLineEdit, QDockWidget, QTableView, QVBoxLayout
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QTableView
 from PyQt5.QtCore import Qt, QAbstractTableModel
 
 import pandas as pd
 
-
-class FileSelector(QWidget):
-    def __init__(self, main):
-        super().__init__()
-        self.file = ""
-        self.main = main
-        self.initUI()
-
-    def initUI(self):
-        hbox = QHBoxLayout()
-        self.text_file_explorer = QLineEdit(self)
-        self.text_file_explorer.setReadOnly(True)
-        hbox.addWidget(self.text_file_explorer)
-
-        self.button_file_explorer = QPushButton('Elegir archivo', self)
-        self.button_file_explorer.clicked.connect(self.openFileNameDialog)
-        hbox.addWidget(self.button_file_explorer)
-
-        self.button_refresh = QPushButton('Aplicar', self)
-        self.button_refresh.clicked.connect(self.refresh_file)
-        # TODO
-        # self.button_refresh.clicked.connect(self.openFileNameDialog)
-        hbox.addWidget(self.button_refresh)
-
-        self.setLayout(hbox)
-
-    def openFileNameDialog(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        filename, _ = QFileDialog.getOpenFileName(self, "Elegir CSV", "",
-                                                  "CSV Files (*.csv);;All Files (*)", options=options)
-        if filename:
-            self.filename = filename
-            self.text_file_explorer.setText(self.filename)
-            print(filename)
-
-    def refresh_file(self):
-        df = pd.read_csv(self.filename, sep=';')
-        self.main.refresh_model(df)
+from file_selector import FileSelector
 
 
 class PandasModel(QAbstractTableModel):
@@ -100,11 +59,14 @@ class MyMainWindow(QMainWindow):
         # Reader
         self.table = QTableView()
 
-        df = pd.read_csv("test.csv", sep=';')
+        df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
         self.refresh_model(df)
         self.setCentralWidget(self.table)
 
     def refresh_model(self, df):
+        if type(df) is str:
+            df = pd.read_csv(df, sep=';')
+
         model = PandasModel(df)
         self.table.setModel(model)
 
@@ -113,10 +75,4 @@ if __name__ == '__main__':
     app = QApplication([])
     window = MyMainWindow("ML tool")
     window.show()
-    # ex = FileSelector()
-
-    # self.pushButton = QtWidgets.QPushButton(Import_data)
-    # self.pushButton.setGeometry(QtCore.QRect(600, 20, 81, 23))
-    # self.pushButton.setObjectName("pushButton")
-    # self.pushButton.clicked.connect(self.browse_data1)
     sys.exit(app.exec_())
