@@ -8,21 +8,22 @@
 #                                              |___/
 
 # TODO:
-# - Dock lateral con acciones
-# - Mostrar solo columnas encendidas/apagadas
 # - Descargar csv modificado
 # - Encontrar máximos y minimos en columnas
 # - Aplicar modelos básicos
+# - Tail / Head / All
 
 
 import sys
 import pandas as pd
+from PyQt5 import QtGui, QtCore
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QAction, QWidget, QVBoxLayout, QPushButton
 from PyQt5.QtCore import Qt
 
 from file_selector import FileSelector
 from awesome_table import AwesomeTable
+from actions import button_width, Actions
 
 
 class MyMainWindow(QMainWindow):
@@ -31,6 +32,9 @@ class MyMainWindow(QMainWindow):
         self.setWindowTitle(window_title)
         self.geometry = (300, 300, 1000, 500)
         self.setGeometry(*self.geometry)
+        margin = 1
+        self.setContentsMargins(margin, 0, margin, margin)
+        self.icon_init()
 
         # File explorer
         self.dockWidget_file_explorer = QDockWidget(self)
@@ -42,20 +46,32 @@ class MyMainWindow(QMainWindow):
 
         # Reader
         self.table = AwesomeTable(self)
-
         df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
         self.refresh_table(df)
         self.setCentralWidget(self.table)
+
+        # Dock Left Actions
+        self.actions = Actions(self)
+        self.dockWidget_actions = QDockWidget(self)
+        self.dockWidget_actions.setFloating(False)
+
+        self.dockWidget_actions.setWidget(self.actions)
+        self.dockWidget_actions.setMaximumWidth(button_width)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget_actions)
+
+    def icon_init(self):
+        self.setWindowIcon(QtGui.QIcon("img/icon.png"))
+        import ctypes
+        myappid = 'alejandroloda.machineLearningCsvTool.v00-01'  # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     def refresh_table(self, df):
         self.table.refresh_table(df)
 
     def reset_dock_view(self):
+        """Turn on visibility of all docks"""
         self.dockWidget_file_explorer.setVisible(True)
-
-    def off_column(self):
-        # self.table.setColumnHidden(0, True)
-        self.table.hideColumn(0)
+        self.dockWidget_actions.setVisible(True)
 
 
 if __name__ == '__main__':
@@ -78,9 +94,9 @@ if __name__ == '__main__':
     show_all_columns.triggered.connect(window.table.show_all_columns)
     file_menu.addAction(show_all_columns)
 
-    inverse_columns_view = QAction("&Inverse columns view")
-    inverse_columns_view.triggered.connect(window.table.inverse_view)
-    file_menu.addAction(inverse_columns_view)
+    # inverse_columns_view = QAction("&Inverse columns view")
+    # inverse_columns_view.triggered.connect(window.table.inverse_view)
+    # file_menu.addAction(inverse_columns_view)
 
     # ---- Prueba ----
     proof = QAction("&Proof")
