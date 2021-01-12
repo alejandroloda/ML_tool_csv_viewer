@@ -6,13 +6,21 @@
 # |_|  |_| \__,_||_||_| |_||_|    |_|   \___/  \__, ||_|   \__,_||_| |_| |_|
 #                                               __/ |
 #                                              |___/
+
+# TODO:
+# - Dock lateral con acciones
+# - Apagar/Encender columnas
+# - Mostrar solo columnas encendidas/apagadas
+# - Descargar csv modificado
+# - Encontrar máximos y minimos en columnas
+# - Aplicar modelos básicos
+
 import sys
+import pandas as pd
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QTableView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QTableView, QAction
 from PyQt5.QtCore import Qt, QAbstractTableModel
-
-import pandas as pd
 
 from file_selector import FileSelector
 
@@ -57,22 +65,92 @@ class MyMainWindow(QMainWindow):
         self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget_file_explorer)
 
         # Reader
-        self.table = QTableView()
+        self.table = AwesomeTable(self)
 
         df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
-        self.refresh_model(df)
+        self.refresh_table(df)
         self.setCentralWidget(self.table)
 
-    def refresh_model(self, df):
+    def refresh_table(self, df):
+        self.table.refresh_table(df)
+
+    def reset_dock_view(self):
+        self.dockWidget_file_explorer.setVisible(True)
+
+    def off_column(self):
+        # self.table.setColumnHidden(0, True)
+        self.table.hideColumn(0)
+
+
+class AwesomeTable(QTableView):
+    def __init__(self, main):
+        super().__init__()
+        self.main = main
+        self.columns = []
+        self.visible_columns = []
+        # self.doubleClicked.connect(self.print_column_name)
+        self.horizontalHeader().sectionDoubleClicked.connect(self.toggle_column_visibility)
+
+    def refresh_table(self, df):
         if type(df) is str:
             df = pd.read_csv(df, sep=';')
-
         model = PandasModel(df)
-        self.table.setModel(model)
+        self.columns = df.columns
+        self.visible_columns = [1 for _ in self.columns]
+        self.setModel(model)
+
+    def toggle_column_visibility(self, n=None):
+        if n is None:
+            n = self.get_column_number()
+        try:
+            visibility = True if self.visible_columns[n] == 1 else False
+            self.visible_columns[n] = 0 if visibility else 1
+            self.setColumnHidden(n, visibility)
+        except Exception as err:
+            print(str(err))
+
+    # def toggle_column_visibility(self, n=0):
+
+    def get_column_number(self):
+        try:
+            if self.currentIndex().column() != -1:
+                return self.currentIndex().column()
+            return None
+        except:
+            return None
+
+    def get_column_name(self):
+        try:
+            if self.currentIndex().column() != -1:
+                # return self.model().get_items()[self.currentIndex().row()]
+                return self.columns[self.currentIndex().column()]
+            return None
+        except:
+            return None
 
 
 if __name__ == '__main__':
     app = QApplication([])
     window = MyMainWindow("ML tool")
     window.show()
+
+    #  __  __
+    # |  \/  | ___  _ _  _  _
+    # | |\/| |/ -_)| ' \| || |
+    # |_|  |_|\___||_||_|\_,_|
+    menu_bar = window.menuBar()
+    file_menu = menu_bar.addMenu("&View")
+    new_action = QAction("All &dock actives")
+    new_action.triggered.connect(window.reset_dock_view)
+    # new_action.setShortcut(QKeySequence.New)
+    file_menu.addAction(new_action)
+
+    proof = QAction("&Proof")
+    proof.triggered.connect(lambda: window.table.toggle_column_visibility(1))
+    file_menu.addAction(proof)
+    #  __  __                  ___  _
+    # |  \/  | ___  _ _  _  _ | __|(_) _ _
+    # | |\/| |/ -_)| ' \| || || _| | || ' \
+    # |_|  |_|\___||_||_|\_,_||_|  |_||_||_|
+
     sys.exit(app.exec_())
