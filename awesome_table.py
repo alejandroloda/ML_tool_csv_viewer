@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QTableView, QFileDialog
 from PyQt5.QtCore import Qt, QAbstractTableModel
 
@@ -37,6 +37,7 @@ class AwesomeTable(QTableView):
         self.main = main
         self.columns = []
         self.visible_columns = []
+
         # self.doubleClicked.connect(self.print_column_name)
         self.horizontalHeader().sectionDoubleClicked.connect(self.toggle_column_visibility)
 
@@ -81,8 +82,12 @@ class AwesomeTable(QTableView):
             return None
 
     def inverse_view(self):
-        [self.toggle_column_visibility(n) for n in range(len(self.columns))]
+        try:
+            [self.toggle_column_visibility(n) for n in range(len(self.columns))]
+        except Exception as err:
+            print(err)
 
+    # TODO Only save visible columns
     def download_csv_of_on_columns(self):
         try:
             options = QFileDialog.Options()
@@ -90,7 +95,7 @@ class AwesomeTable(QTableView):
             filename, _ = QFileDialog.getSaveFileName(self, "Choose CSV", "",
                                                       "CSV Files (*.csv);;All Files (*)", options=options)
 
-            with open('monschedule.csv', 'w') as stream:
+            with open(filename, 'w') as stream:
                 writer = csv.writer(stream, delimiter=';', lineterminator='\n')
                 writer.writerow(self.columns)
                 for row in range(self.model().rowCount()):
