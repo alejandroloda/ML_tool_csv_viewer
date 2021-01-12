@@ -55,23 +55,19 @@ class AwesomeTable(QTableView):
         self.visible_columns = [1 for _ in self.columns]
         self.setModel(model)
 
-    # TODO Optimizar, no cargar de nuevo el df, sino jugar con el modelo
     def body_head_tail_table(self, n, rows=5):
         try:
+            # All visible
+            [self.setRowHidden(i, False) for i in range(self.last_df.shape[0])]
             # Head
             if n == 0:
-                df = self.last_df.head(rows)
+                [self.setRowHidden(i, True) for i in range(rows, self.last_df.shape[0])]
             # Tail
             elif n == 1:
-                df = self.last_df.tail(rows)
+                [self.setRowHidden(i, True) for i in range(0, self.last_df.shape[0] - rows)]
             # Body
             else:
-                df = self.last_df
-
-            model = PandasModel(df)
-            # self.columns = self.last_df.columns
-            # self.visible_columns = [1 for _ in self.columns]
-            self.setModel(model)
+                pass
         except Exception as err:
             print(err)
 
