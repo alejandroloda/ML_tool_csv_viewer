@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QFileDialog, QPushButton, QHBoxLayout, QLineEdit, QMessageBox
 import pandas as pd
+
+from PyQt5.QtWidgets import QWidget, QFileDialog, QPushButton, QHBoxLayout, QLineEdit, QMessageBox
 
 
 class FileSelector(QWidget):
@@ -16,11 +17,11 @@ class FileSelector(QWidget):
         self.text_file_explorer.setReadOnly(True)
         hbox.addWidget(self.text_file_explorer)
 
-        button_file_explorer = QPushButton('Elegir archivo', self)
+        button_file_explorer = QPushButton('Choose file', self)
         button_file_explorer.clicked.connect(self.open_file_name_dialog)
         hbox.addWidget(button_file_explorer)
 
-        button_refresh = QPushButton('Aplicar', self)
+        button_refresh = QPushButton('Apply', self)
         button_refresh.clicked.connect(self.refresh_table)
         hbox.addWidget(button_refresh)
 
@@ -29,7 +30,7 @@ class FileSelector(QWidget):
     def open_file_name_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filename, _ = QFileDialog.getOpenFileName(self, "Elegir CSV", "",
+        filename, _ = QFileDialog.getOpenFileName(self, "Choose CSV", "",
                                                   "CSV Files (*.csv);;All Files (*)", options=options)
         if filename:
             self.filename = filename

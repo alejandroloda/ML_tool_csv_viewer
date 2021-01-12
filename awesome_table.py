@@ -1,7 +1,8 @@
 import pandas as pd
+import csv
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QTableView
+from PyQt5.QtWidgets import QTableView, QFileDialog
 from PyQt5.QtCore import Qt, QAbstractTableModel
 
 
@@ -78,3 +79,30 @@ class AwesomeTable(QTableView):
             return None
         except:
             return None
+
+    def inverse_view(self):
+        [self.toggle_column_visibility(n) for n in range(len(self.columns))]
+
+    def download_csv_of_on_columns(self):
+        try:
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog
+            filename, _ = QFileDialog.getSaveFileName(self, "Choose CSV", "",
+                                                      "CSV Files (*.csv);;All Files (*)", options=options)
+
+            with open('monschedule.csv', 'w') as stream:
+                writer = csv.writer(stream, delimiter=';', lineterminator='\n')
+                writer.writerow(self.columns)
+                for row in range(self.model().rowCount()):
+                    rowdata = []
+                    for column in range(self.model().columnCount()):
+                        # item = self.model().item(row, column)
+                        item = self.model().index(row, column).data()
+                        if item is not None:
+                            rowdata.append(item)
+                        else:
+                            rowdata.append('')
+
+                    writer.writerow(rowdata)
+        except Exception as err:
+            print(str(err))

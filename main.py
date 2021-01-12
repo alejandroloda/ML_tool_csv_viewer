@@ -9,11 +9,11 @@
 
 # TODO:
 # - Dock lateral con acciones
-# - Apagar/Encender columnas
 # - Mostrar solo columnas encendidas/apagadas
 # - Descargar csv modificado
 # - Encontrar máximos y minimos en columnas
 # - Aplicar modelos básicos
+
 
 import sys
 import pandas as pd
@@ -37,6 +37,7 @@ class MyMainWindow(QMainWindow):
         self.dockWidget_file_explorer.setFloating(False)
         self.file_explorer = FileSelector(self)
         self.dockWidget_file_explorer.setWidget(self.file_explorer)
+        # self.dockWidget_file_explorer.setWindowTitle("File explorer dock")
         self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget_file_explorer)
 
         # Reader
@@ -73,13 +74,18 @@ if __name__ == '__main__':
     # new_action.setShortcut(QKeySequence.New)
     file_menu.addAction(new_action)
 
-    proof = QAction("&Proof")
-    proof.triggered.connect(lambda: window.table.toggle_column_visibility(1))
-    file_menu.addAction(proof)
-
     show_all_columns = QAction("&Show all columns")
     show_all_columns.triggered.connect(window.table.show_all_columns)
     file_menu.addAction(show_all_columns)
+
+    inverse_columns_view = QAction("&Inverse columns view")
+    inverse_columns_view.triggered.connect(window.table.inverse_view)
+    file_menu.addAction(inverse_columns_view)
+
+    # ---- Prueba ----
+    proof = QAction("&Proof")
+    proof.triggered.connect(lambda: window.table.download_csv_of_on_columns())
+    file_menu.addAction(proof)
     #  __  __                  ___  _
     # |  \/  | ___  _ _  _  _ | __|(_) _ _
     # | |\/| |/ -_)| ' \| || || _| | || ' \
