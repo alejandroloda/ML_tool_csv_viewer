@@ -8,9 +8,12 @@ from PyQt5.QtCore import Qt, QAbstractTableModel
 
 class PandasModel(QAbstractTableModel):
     def __init__(self, data, parent=None):
-        QAbstractTableModel.__init__(self, parent)
-        self._data = data
-        self.header_labels = data.columns
+        try:
+            QAbstractTableModel.__init__(self, parent)
+            self._data = data
+            self.header_labels = data.columns
+        except Exception as err:
+            print(err)
 
     def rowCount(self, parent=None):
         return len(self._data.values)
@@ -37,6 +40,7 @@ class AwesomeTable(QTableView):
         self.main = main
         self.columns = []
         self.visible_columns = []
+        self.last_df = None
 
         # self.doubleClicked.connect(self.print_column_name)
         self.horizontalHeader().sectionDoubleClicked.connect(self.toggle_column_visibility)
@@ -44,10 +48,32 @@ class AwesomeTable(QTableView):
     def refresh_table(self, df):
         if type(df) is str:
             df = pd.read_csv(df, sep=';')
+
+        self.last_df = df
         model = PandasModel(df)
         self.columns = df.columns
         self.visible_columns = [1 for _ in self.columns]
         self.setModel(model)
+
+    # TODO Optimizar, no cargar de nuevo el df, sino jugar con el modelo
+    def body_head_tail_table(self, n, rows=5):
+        try:
+            # Head
+            if n == 0:
+                df = self.last_df.head(rows)
+            # Tail
+            elif n == 1:
+                df = self.last_df.tail(rows)
+            # Body
+            else:
+                df = self.last_df
+
+            model = PandasModel(df)
+            # self.columns = self.last_df.columns
+            # self.visible_columns = [1 for _ in self.columns]
+            self.setModel(model)
+        except Exception as err:
+            print(err)
 
     def toggle_column_visibility(self, n=None):
         if n is None:

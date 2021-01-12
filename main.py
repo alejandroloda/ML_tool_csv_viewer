@@ -12,6 +12,7 @@
 # - Encontrar máximos y minimos en columnas
 # - Aplicar modelos básicos
 # - Tail / Head / All
+# - Elegir separador
 
 
 import sys
@@ -56,7 +57,7 @@ class MyMainWindow(QMainWindow):
         self.dockWidget_actions.setFloating(False)
 
         self.dockWidget_actions.setWidget(self.actions)
-        self.dockWidget_actions.setMaximumWidth(button_width)
+        # self.dockWidget_actions.setMaximumWidth(button_width)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget_actions)
 
     def icon_init(self):
@@ -65,8 +66,8 @@ class MyMainWindow(QMainWindow):
         myappid = 'alejandroloda.machineLearningCsvTool.v00-01'  # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-    def refresh_table(self, df):
-        self.table.refresh_table(df)
+    def refresh_table(self, filename):
+        self.table.refresh_table(filename)
 
     def reset_dock_view(self):
         """Turn on visibility of all docks"""

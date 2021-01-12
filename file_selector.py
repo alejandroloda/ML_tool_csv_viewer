@@ -39,8 +39,7 @@ class FileSelector(QWidget):
 
     def refresh_table(self):
         if self.filename:
-            df = pd.read_csv(self.filename, sep=';')
-            self.main.refresh_table(df)
+            self.main.refresh_table(self.filename)
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Wrong file")
