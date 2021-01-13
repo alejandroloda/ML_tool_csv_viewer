@@ -45,7 +45,7 @@ class MyMainWindow(QMainWindow):
         # self.dockWidget_file_explorer.setWindowTitle("File explorer dock")
         self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget_file_explorer)
 
-        # Reader
+        # Reader (part 1)
         self.table = AwesomeTable(self)
         self.setCentralWidget(self.table)
 
@@ -57,7 +57,7 @@ class MyMainWindow(QMainWindow):
         # self.dockWidget_actions.setMaximumWidth(button_width)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget_actions)
 
-        # Reader part 2
+        # Reader (part 2)
         df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
         self.refresh_table(df)
 
@@ -100,6 +100,10 @@ if __name__ == '__main__':
     # inverse_columns_view = QAction("&Inverse columns view")
     # inverse_columns_view.triggered.connect(window.table.inverse_view)
     # file_menu.addAction(inverse_columns_view)
+
+    download_csv_without_hidden_columns = QAction("&Download CSV without hidden columns")
+    download_csv_without_hidden_columns.triggered.connect(lambda: window.table.download_csv_of_on_columns())
+    file_menu.addAction(download_csv_without_hidden_columns)
 
     # ---- Prueba ----
     proof = QAction("&Proof")

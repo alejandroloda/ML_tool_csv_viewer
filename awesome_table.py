@@ -55,6 +55,7 @@ class AwesomeTable(QTableView):
         model = PandasModel(df)
         self.setModel(model)
         self.body_head_tail_table(2)
+        [self.setColumnHidden(n, False) for n in range(len(self.columns))]  # Check all columns aren't hidden
 
     def body_head_tail_table(self, n, rows=5):
         try:
@@ -110,7 +111,6 @@ class AwesomeTable(QTableView):
         except Exception as err:
             print(err)
 
-    # TODO Only save visible columns
     def download_csv_of_on_columns(self):
         try:
             options = QFileDialog.Options()
@@ -120,16 +120,18 @@ class AwesomeTable(QTableView):
 
             with open(filename, 'w') as stream:
                 writer = csv.writer(stream, delimiter=';', lineterminator='\n')
-                writer.writerow(self.columns)
+                allowed_columns = [self.columns[n] for n in range(len(self.columns)) if self.visible_columns[n] == 1]
+                writer.writerow(allowed_columns)
                 for row in range(self.model().rowCount()):
                     rowdata = []
                     for column in range(self.model().columnCount()):
                         # item = self.model().item(row, column)
-                        item = self.model().index(row, column).data()
-                        if item is not None:
-                            rowdata.append(item)
-                        else:
-                            rowdata.append('')
+                        if self.visible_columns[column] == 1:
+                            item = self.model().index(row, column).data()
+                            if item is not None:
+                                rowdata.append(item)
+                            else:
+                                rowdata.append('')
 
                     writer.writerow(rowdata)
         except Exception as err:
