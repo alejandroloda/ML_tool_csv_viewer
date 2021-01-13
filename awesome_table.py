@@ -93,7 +93,8 @@ class AwesomeTable(QTableView):
             if self.currentIndex().column() != -1:
                 return self.currentIndex().column()
             return None
-        except:
+        except Exception as err:
+            print(err)
             return None
 
     def get_column_name(self):
@@ -102,7 +103,8 @@ class AwesomeTable(QTableView):
                 # return self.model().get_items()[self.currentIndex().row()]
                 return self.columns[self.currentIndex().column()]
             return None
-        except:
+        except Exception as err:
+            print(err)
             return None
 
     def inverse_view(self):
@@ -123,16 +125,16 @@ class AwesomeTable(QTableView):
                 allowed_columns = [self.columns[n] for n in range(len(self.columns)) if self.visible_columns[n] == 1]
                 writer.writerow(allowed_columns)
                 for row in range(self.model().rowCount()):
-                    rowdata = []
+                    row_data = []
                     for column in range(self.model().columnCount()):
                         # item = self.model().item(row, column)
                         if self.visible_columns[column] == 1:
                             item = self.model().index(row, column).data()
                             if item is not None:
-                                rowdata.append(item)
+                                row_data.append(item)
                             else:
-                                rowdata.append('')
+                                row_data.append('')
 
-                    writer.writerow(rowdata)
+                    writer.writerow(row_data)
         except Exception as err:
             print(str(err))

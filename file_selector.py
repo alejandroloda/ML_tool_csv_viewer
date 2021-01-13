@@ -18,9 +18,9 @@ class FileSelector(QWidget):
         self.main = main
         self.text_file_explorer = None
         self.text_separator = None
-        self.init_UI()
+        self.init_ui()
 
-    def init_UI(self):
+    def init_ui(self):
         hbox = QHBoxLayout()
 
         self.text_file_explorer = QLineEdit(self)

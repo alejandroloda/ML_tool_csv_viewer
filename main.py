@@ -8,7 +8,6 @@
 #                                              |___/
 
 # TODO:
-# - Descargar csv modificado
 # - Encontrar máximos y minimos en columnas
 # - Aplicar modelos básicos
 # - Al cargar una tabla nueva, lanzar señal para resetear lo pertinente
@@ -64,8 +63,8 @@ class MyMainWindow(QMainWindow):
     def icon_init(self):
         self.setWindowIcon(QtGui.QIcon("img/icon.png"))
         import ctypes
-        myappid = 'alejandroloda.machineLearningCsvTool.v00-01'  # arbitrary string
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+        my_app_id = 'alejandroloda.machineLearningCsvTool.v00-01'  # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(my_app_id)
 
     def refresh_table(self, filename, sep=';'):
         self.table.refresh_table(filename, sep)
@@ -105,7 +104,7 @@ if __name__ == '__main__':
     download_csv_without_hidden_columns.triggered.connect(lambda: window.table.download_csv_of_on_columns())
     file_menu.addAction(download_csv_without_hidden_columns)
 
-    # ---- Prueba ----
+    # ---- Action Proof ----
     proof = QAction("&Proof")
     proof.triggered.connect(lambda: window.table.download_csv_of_on_columns())
     file_menu.addAction(proof)
