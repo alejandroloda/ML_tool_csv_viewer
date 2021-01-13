@@ -48,9 +48,17 @@ class ActionButton(QPushButton):
 
 
 class BodyHeadTailButton(ActionButton):
+    def __init__(self, parent):
+        self.tooltip = {0: "Actual: all\nNext: head", 1: "Actual: head\nNext: tail", 2: "Actual: tail\nNext: all"}
+        self.actual_icon = 0
+        super().__init__('', parent,
+                         "Toggle head/tail/all" + "\n" + self.tooltip[self.actual_icon],
+                         parent.main.table.body_head_tail_table)
+
     def clicked_function(self):
         try:
             self.is_clicked = not self.is_clicked
+            self.setToolTip("Toggle head/tail/all" + "\n" + self.tooltip[self.actual_icon])
             self.fun_connect(self.actual_icon)
             self.next_icon()
         except Exception as err:
@@ -68,8 +76,7 @@ class Actions(QWidget):
         self.button_show_hide_columns.add_icons(['img/actions/visibility.svg', 'img/actions/visibility_not.svg'])
         vbox.addWidget(self.button_show_hide_columns)
 
-        self.button_tail_head_all = BodyHeadTailButton('', self, "Show/Hide all columns",
-                                                       self.main.table.body_head_tail_table)
+        self.button_tail_head_all = BodyHeadTailButton(self)
         self.button_tail_head_all.add_icons(['img/actions/head.svg', 'img/actions/tail.svg', 'img/actions/body.svg'])
         vbox.addWidget(self.button_tail_head_all)
 

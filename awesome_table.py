@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QTableView, QFileDialog
 from PyQt5.QtCore import Qt, QAbstractTableModel
 
@@ -45,9 +45,9 @@ class AwesomeTable(QTableView):
         # self.doubleClicked.connect(self.print_column_name)
         self.horizontalHeader().sectionDoubleClicked.connect(self.toggle_column_visibility)
 
-    def refresh_table(self, df):
+    def refresh_table(self, df, sep=';'):
         if type(df) is str:
-            df = pd.read_csv(df, sep=';')
+            df = pd.read_csv(df, sep=sep)
 
         self.last_df = df
         model = PandasModel(df)

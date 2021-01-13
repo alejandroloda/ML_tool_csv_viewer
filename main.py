@@ -11,15 +11,15 @@
 # - Descargar csv modificado
 # - Encontrar máximos y minimos en columnas
 # - Aplicar modelos básicos
-# - Tail / Head / All
-# - Elegir separador
+# - Al cargar una tabla nueva, lanzar señal para resetear lo pertinente
+# - Porcentaje de carga de tabla
 
 
 import sys
 import pandas as pd
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QAction, QWidget, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDockWidget, QAction
 from PyQt5.QtCore import Qt
 
 from file_selector import FileSelector
@@ -66,8 +66,8 @@ class MyMainWindow(QMainWindow):
         myappid = 'alejandroloda.machineLearningCsvTool.v00-01'  # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-    def refresh_table(self, filename):
-        self.table.refresh_table(filename)
+    def refresh_table(self, filename, sep=';'):
+        self.table.refresh_table(filename, sep)
 
     def reset_dock_view(self):
         """Turn on visibility of all docks"""

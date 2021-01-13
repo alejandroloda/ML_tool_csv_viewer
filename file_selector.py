@@ -1,6 +1,14 @@
-import pandas as pd
+from PyQt5.QtWidgets import QWidget, QFileDialog, QPushButton, QHBoxLayout, QLineEdit, QMessageBox, QLabel
+from PyQt5.QtCore import Qt
 
-from PyQt5.QtWidgets import QWidget, QFileDialog, QPushButton, QHBoxLayout, QLineEdit, QMessageBox
+
+class WarningBox(QMessageBox):
+    def __init__(self, title, text):
+        super().__init__()
+        self.setWindowTitle(title)
+        self.setText(text)
+        self.setIcon(QMessageBox.Warning)
+        self.exec_()
 
 
 class FileSelector(QWidget):
@@ -9,10 +17,12 @@ class FileSelector(QWidget):
         self.filename = ""
         self.main = main
         self.text_file_explorer = None
-        self.initUI()
+        self.text_separator = None
+        self.init_UI()
 
-    def initUI(self):
+    def init_UI(self):
         hbox = QHBoxLayout()
+
         self.text_file_explorer = QLineEdit(self)
         self.text_file_explorer.setReadOnly(True)
         hbox.addWidget(self.text_file_explorer)
@@ -20,6 +30,14 @@ class FileSelector(QWidget):
         button_file_explorer = QPushButton('Choose file', self)
         button_file_explorer.clicked.connect(self.open_file_name_dialog)
         hbox.addWidget(button_file_explorer)
+
+        hbox.addWidget(QLabel("Sep:"))
+
+        self.text_separator = QLineEdit(self)
+        self.text_separator.setText(';')
+        self.text_separator.setAlignment(Qt.AlignCenter)
+        self.text_separator.setFixedWidth(30)
+        hbox.addWidget(self.text_separator)
 
         button_refresh = QPushButton('Apply', self)
         button_refresh.clicked.connect(self.refresh_table)
@@ -39,10 +57,9 @@ class FileSelector(QWidget):
 
     def refresh_table(self):
         if self.filename:
-            self.main.refresh_table(self.filename)
+            if self.text_separator.text():
+                self.main.refresh_table(self.filename, self.text_separator.text())
+            else:
+                WarningBox("Wrong separator", "Separator cannot be empty or invalid")
         else:
-            msg = QMessageBox()
-            msg.setWindowTitle("Wrong file")
-            msg.setText("File cannot be empty or invalid")
-            msg.setIcon(QMessageBox.Warning)
-            msg.exec_()
+            WarningBox("Wrong file", "File cannot be empty or invalid")
