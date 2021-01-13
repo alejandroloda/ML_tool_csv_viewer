@@ -47,18 +47,19 @@ class MyMainWindow(QMainWindow):
 
         # Reader
         self.table = AwesomeTable(self)
-        df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
-        self.refresh_table(df)
         self.setCentralWidget(self.table)
 
         # Dock Left Actions
         self.actions = Actions(self)
         self.dockWidget_actions = QDockWidget(self)
         self.dockWidget_actions.setFloating(False)
-
         self.dockWidget_actions.setWidget(self.actions)
         # self.dockWidget_actions.setMaximumWidth(button_width)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget_actions)
+
+        # Reader part 2
+        df = pd.DataFrame([['valid', 'csv']], columns=['Waiting', 'for'])
+        self.refresh_table(df)
 
     def icon_init(self):
         self.setWindowIcon(QtGui.QIcon("img/icon.png"))
@@ -68,6 +69,7 @@ class MyMainWindow(QMainWindow):
 
     def refresh_table(self, filename, sep=';'):
         self.table.refresh_table(filename, sep)
+        self.actions.button_tail_head_all.reset_icon_pos()
 
     def reset_dock_view(self):
         """Turn on visibility of all docks"""

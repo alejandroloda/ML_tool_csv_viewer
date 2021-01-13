@@ -36,8 +36,9 @@ class ActionButton(QPushButton):
             self.use_icon(self.actual_icon)
 
     def use_icon(self, n=0):
-        icon = QtGui.QIcon(self.icons[n])
-        self.setIcon(icon)
+        if self.icons is not None:
+            icon = QtGui.QIcon(self.icons[n])
+            self.setIcon(icon)
 
     def add_icons(self, list_of_filenames):
         self.icons = list_of_filenames
@@ -64,6 +65,10 @@ class BodyHeadTailButton(ActionButton):
         except Exception as err:
             print(err)
 
+    def reset_icon_pos(self):
+        self.actual_icon = 0
+        self.use_icon(self.actual_icon)
+
 
 class Actions(QWidget):
     def __init__(self, main):
@@ -77,7 +82,7 @@ class Actions(QWidget):
         vbox.addWidget(self.button_show_hide_columns)
 
         self.button_tail_head_all = BodyHeadTailButton(self)
-        self.button_tail_head_all.add_icons(['img/actions/head.svg', 'img/actions/tail.svg', 'img/actions/body.svg'])
+        self.button_tail_head_all.add_icons(['img/actions/body.svg', 'img/actions/head.svg', 'img/actions/tail.svg'])
         vbox.addWidget(self.button_tail_head_all)
 
         vbox.setAlignment(Qt.AlignHCenter)

@@ -50,10 +50,11 @@ class AwesomeTable(QTableView):
             df = pd.read_csv(df, sep=sep)
 
         self.last_df = df
-        model = PandasModel(df)
         self.columns = df.columns
         self.visible_columns = [1 for _ in self.columns]
+        model = PandasModel(df)
         self.setModel(model)
+        self.body_head_tail_table(2)
 
     def body_head_tail_table(self, n, rows=5):
         try:
